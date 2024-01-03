@@ -6,7 +6,7 @@ import com.android.tools.smali.dexlib2.AccessFlags
 import com.android.tools.smali.dexlib2.Opcode
 
 object UnlockPremiumFingerprint : MethodFingerprint(
-    returnType = "Z",
+    returnType = "V",
     accessFlags = AccessFlags.PUBLIC or AccessFlags.FINAL,
     parameters = listOf("Landroid/content/Context;"),
     opcodes = listOf(Opcode.RETURN_VOID),

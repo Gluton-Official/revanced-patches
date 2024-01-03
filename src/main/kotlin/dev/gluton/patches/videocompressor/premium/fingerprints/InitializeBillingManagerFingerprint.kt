@@ -5,7 +5,7 @@ import com.android.tools.smali.dexlib2.AccessFlags
 import com.android.tools.smali.dexlib2.Opcode
 
 object InitializeBillingManagerFingerprint : MethodFingerprint(
-    returnType = "Z",
+    returnType = "V",
     accessFlags = AccessFlags.PUBLIC.value,
     parameters = listOf("Landroid/content/Context;"),
     opcodes = listOf(Opcode.RETURN_VOID),
