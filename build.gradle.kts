@@ -5,7 +5,7 @@ plugins {
     `maven-publish`
 }
 
-group = "your.org"
+group = "dev.gluton"
 
 repositories {
     mavenCentral()
@@ -30,22 +30,26 @@ kotlin {
     jvmToolchain(11)
 }
 
+private val gradleProperty = object {
+    operator fun get(name: String): String = extra[name] as String
+}
+
 tasks.withType(Jar::class) {
     manifest {
-        attributes["Name"] = "Your Patches"
-        attributes["Description"] = "Patches for ReVanced."
+        attributes["Name"] = gradleProperty["patches.name"]
+        attributes["Description"] = gradleProperty["patches.description"]
         attributes["Version"] = version
         attributes["Timestamp"] = System.currentTimeMillis().toString()
-        attributes["Source"] = "git@github.com:you/revanced-patches.git"
-        attributes["Author"] = "You"
-        attributes["Contact"] = "contact@your.homepage"
-        attributes["Origin"] = "https://your.homepage"
-        attributes["License"] = "GNU General Public License v3.0"
+        attributes["Source"] = gradleProperty["patches.source"]
+        attributes["Author"] = gradleProperty["patches.author"]
+        attributes["Contact"] = gradleProperty["patches.email"]
+        attributes["Origin"] = gradleProperty["patches.url"]
+        attributes["License"] = gradleProperty["patches.license"]
     }
 }
 
 tasks {
-    register<DefaultTask>("generateBundle") {
+    val generateBundle by registering(DefaultTask::class) {
         description = "Generate DEX files and add them in the JAR file"
 
         dependsOn(build)
@@ -72,7 +76,7 @@ tasks {
     // Required to run tasks because Gradle semantic-release plugin runs the publish task.
     // Tracking: https://github.com/KengoTODA/gradle-semantic-release-plugin/issues/435
     named("publish") {
-        dependsOn("generateBundle")
+        dependsOn(generateBundle)
     }
 }
 
@@ -82,27 +86,27 @@ publishing {
             from(components["java"])
 
             pom {
-                name = "Your Patches"
-                description = "Patches for ReVanced."
-                url = "https://your.homepage"
+                name = gradleProperty["patches.name"]
+                description = gradleProperty["patches.description"]
+                url = gradleProperty["patches.url"]
 
                 licenses {
                     license {
-                        name = "GNU General Public License v3.0"
-                        url = "https://www.gnu.org/licenses/gpl-3.0.en.html"
+                        name = gradleProperty["patches.license"]
+                        url = gradleProperty["patches.licenseUrl"]
                     }
                 }
                 developers {
                     developer {
-                        id = "Your ID"
-                        name = "Your Name"
-                        email = "contact@your.homepage"
+                        id = gradleProperty["maven.userId"]
+                        name = gradleProperty["patches.author"]
+                        email = gradleProperty["patches.email"]
                     }
                 }
                 scm {
-                    connection = "scm:git:git://github.com/you/revanced-patches.git"
-                    developerConnection = "scm:git:git@github.com:you/revanced-patches.git"
-                    url = "https://github.com/you/revanced-patches"
+                    connection = "scm:git:git${gradleProperty["patches.githubUrl"].removePrefix("https")}.git"
+                    developerConnection = "scm:git:${gradleProperty["patches.source"]}"
+                    url = gradleProperty["patches.githubUrl"]
                 }
             }
         }
